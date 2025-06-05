@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Typography, 
@@ -13,7 +13,17 @@ import {
   Chip,
   Card,
   CardContent,
-  Grid
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -66,6 +76,47 @@ const summaryData = {
 };
 
 const Billing = () => {
+  // State for modal
+  const [open, setOpen] = useState(false);
+  const [invoiceData, setInvoiceData] = useState({
+    date: new Date().toISOString().split('T')[0],
+    petName: '',
+    owner: '',
+    amount: '',
+    paymentMethod: ''
+  });
+
+  // Handle modal open/close
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInvoiceData({
+      ...invoiceData,
+      [name]: value
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    // Here you would typically send the data to your backend
+    console.log('Creating invoice with data:', invoiceData);
+    
+    // For now, just close the modal
+    handleClose();
+    
+    // Reset form data
+    setInvoiceData({
+      date: new Date().toISOString().split('T')[0],
+      petName: '',
+      owner: '',
+      amount: '',
+      paymentMethod: ''
+    });
+  };
+
   // Function to get status color
   const getStatusColor = (status) => {
     switch (status) {
@@ -145,6 +196,7 @@ const Billing = () => {
         <Button 
           variant="contained" 
           color="primary"
+          onClick={handleOpen}
         >
           Create Invoice
         </Button>
@@ -210,6 +262,70 @@ const Billing = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Create Invoice Modal */}
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Create New Invoice</DialogTitle>
+        <DialogContent>
+          <Stack spacing={3} sx={{ mt: 1 }}>
+            <TextField
+              label="Date"
+              type="date"
+              name="date"
+              value={invoiceData.date}
+              onChange={handleChange}
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              label="Pet Name"
+              name="petName"
+              value={invoiceData.petName}
+              onChange={handleChange}
+              fullWidth
+            />
+            <TextField
+              label="Owner"
+              name="owner"
+              value={invoiceData.owner}
+              onChange={handleChange}
+              fullWidth
+            />
+            <TextField
+              label="Amount"
+              name="amount"
+              value={invoiceData.amount}
+              onChange={handleChange}
+              type="number"
+              InputProps={{
+                startAdornment: '$',
+              }}
+              fullWidth
+            />
+            <FormControl fullWidth>
+              <InputLabel id="payment-method-label">Payment Method</InputLabel>
+              <Select
+                labelId="payment-method-label"
+                name="paymentMethod"
+                value={invoiceData.paymentMethod}
+                onChange={handleChange}
+                label="Payment Method"
+              >
+                <MenuItem value="Credit Card">Credit Card</MenuItem>
+                <MenuItem value="Cash">Cash</MenuItem>
+                <MenuItem value="Insurance">Insurance</MenuItem>
+                <MenuItem value="Bank Transfer">Bank Transfer</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="inherit">Cancel</Button>
+          <Button onClick={handleSubmit} variant="contained" color="primary">Create</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
