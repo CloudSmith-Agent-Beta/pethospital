@@ -26,7 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
-const API_URL = '/api/pets';
+const API_URL = '/api/pet';
 
 function Pets() {
   const [pets, setPets] = useState([]);
@@ -200,14 +200,6 @@ function Pets() {
                         sx={{ mr: 1 }}
                       >
                         Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => handleDeleteClick(pet.id)}
-                      >
-                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>
