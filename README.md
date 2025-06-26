@@ -74,4 +74,4 @@ Follow the standard GitOps workflow:
 1. Create a feature branch
 2. Make changes
 3. Submit a pull request
-4. After approval and merge, changes will be automatically deployed
+4. After approval and merge, changes will be automatically deployed.
