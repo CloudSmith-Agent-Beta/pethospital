@@ -12,6 +12,61 @@ spec:
       targetPort: 3000
   type: ClusterIP
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cache
+  labels:
+    app: redis-cache
+spec:
+  selector:
+    app: redis-cache
+  ports:
+    - port: 6379
+      targetPort: 6379
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cache
+  labels:
+    app: redis-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-cache
+  template:
+    metadata:
+      labels:
+        app: redis-cache
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+          command: ["redis-server"]
+          args: ["--maxmemory", "200mb", "--maxmemory-policy", "allkeys-lru"]
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,6 +88,11 @@ spec:
           image: 304930966996.dkr.ecr.us-west-2.amazonaws.com/pet-hospital-pet-service:1656dde5264f849e2fe758f01ceab719fa7f0e33
           ports:
             - containerPort: 3000
+          env:
+            - name: REDIS_HOST
+              value: "redis-cache"
+            - name: REDIS_PORT
+              value: "6379"
           resources:
             limits:
               cpu: "500m"

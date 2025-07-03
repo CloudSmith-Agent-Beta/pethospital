@@ -48,6 +48,19 @@ variable "kubernetes_version" {
   default     = "1.27"
 }
 
+# ElastiCache Configuration (HIGH RISK - adds cost)
+variable "redis_node_type" {
+  description = "Instance type for Redis ElastiCache nodes"
+  type        = string
+  default     = "cache.t3.micro"  # Smallest instance to minimize cost
+}
+
+variable "redis_num_nodes" {
+  description = "Number of Redis cache nodes"
+  type        = number
+  default     = 1  # Single node to minimize cost (HIGH RISK - no redundancy)
+}
+
 variable "eks_desired_capacity" {
   description = "Desired number of worker nodes"
   type        = number
