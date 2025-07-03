@@ -66,6 +66,25 @@ module "eks" {
   }
 }
 
+# ElastiCache Redis Module (HIGH RISK - adds cost and complexity)
+module "elasticache" {
+  source = "./modules/elasticache"
+
+  cluster_name           = "${local.prefix}-redis"
+  node_type             = var.redis_node_type
+  num_cache_nodes       = var.redis_num_nodes
+  parameter_group_name  = "default.redis7"
+  port                  = 6379
+  subnet_group_name     = "${local.prefix}-redis-subnet-group"
+  subnet_ids            = module.vpc.private_subnets
+  security_group_ids    = [module.eks.cluster_security_group_id]
+  
+  tags = {
+    Environment = local.environment
+    Project     = local.prefix
+  }
+}
+
 # DynamoDB Tables
 module "dynamodb" {
   source = "./modules/dynamodb"
